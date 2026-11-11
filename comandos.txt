@@ -1,0 +1,38 @@
+COMANDOS UTILIZADOS - ATIVIDADE PRATICA FINAL (YOLO)
+Aluna: Ana Caroline
+
+1. Ativar o ambiente virtual (PowerShell)
+cd $HOME\AulaYOLO
+.\.venv\Scripts\Activate.ps1
+
+2. Criar as pastas do projeto
+New-Item -ItemType Directory -Force Projeto_Final\dataset\images\train, Projeto_Final\dataset\images\val, Projeto_Final\dataset\images\test, Projeto_Final\dataset\labels\train, Projeto_Final\dataset\labels\val, Projeto_Final\dataset\labels\test, Projeto_Final\modelo, Projeto_Final\resultados | Out-Null
+
+3. Copiar o treino (sem 2323.jpg e 2860.jpg, que sao arquivos GIF)
+$o = "2323","2860"; Get-ChildItem Atividade2\dataset\fruit\train_reduzido\images -File | Where-Object { $o -notcontains $_.BaseName } | ForEach-Object { Copy-Item $_.FullName Projeto_Final\dataset\images\train\; Copy-Item "Atividade2\dataset\fruit\train_reduzido\labels\$($_.BaseName).txt" Projeto_Final\dataset\labels\train\ }
+
+4. Copiar a validacao
+Get-ChildItem Atividade2\dataset\fruit\valid\images -File | ForEach-Object { Copy-Item $_.FullName Projeto_Final\dataset\images\val\; Copy-Item "Atividade2\dataset\fruit\valid\labels\$($_.BaseName).txt" Projeto_Final\dataset\labels\val\ }
+
+5. Copiar o teste (sem pine0321.jpg, que e arquivo GIF)
+Get-ChildItem Atividade2\dataset\fruit\test\images -File | Where-Object { $_.BaseName -ne "pine0321" } | ForEach-Object { Copy-Item $_.FullName Projeto_Final\dataset\images\test\; Copy-Item "Atividade2\dataset\fruit\test\labels\$($_.BaseName).txt" Projeto_Final\dataset\labels\test\ }
+
+6. Treinamento (20 epocas)
+yolo detect train model=yolo26n.pt data="Projeto_Final/dataset/data.yaml" epochs=20 imgsz=416 batch=4 device=cpu workers=0 project="$HOME\AulaYOLO\Projeto_Final\resultados" name="treino_final"
+
+7. Validacao
+yolo detect val model="Projeto_Final/resultados/treino_final/weights/best.pt" data="Projeto_Final/dataset/data.yaml" split=val device=cpu project="$HOME\AulaYOLO\Projeto_Final\resultados" name="validacao"
+
+8. Metricas no conjunto de teste
+yolo detect val model="Projeto_Final/resultados/treino_final/weights/best.pt" data="Projeto_Final/dataset/data.yaml" split=test device=cpu project="$HOME\AulaYOLO\Projeto_Final\resultados" name="teste_metricas"
+
+9. Reconhecimento nas imagens ineditas (pasta de teste)
+yolo detect predict model="Projeto_Final/resultados/treino_final/weights/best.pt" source="Projeto_Final/dataset/images/test" conf=0.25 save=True project="$HOME\AulaYOLO\Projeto_Final\resultados" name="deteccoes"
+
+10. Comparacao de 5 imagens (original, anotacao e predicao)
+python Projeto_Final\comparar_imagens.py
+
+11. Copiar o melhor modelo para a pasta de entrega
+Copy-Item Projeto_Final\resultados\treino_final\weights\best.pt Projeto_Final\modelo\best.pt
+
+Observacao: o arquivo data.yaml foi criado manualmente no Bloco de Notas em Projeto_Final\dataset\data.yaml.

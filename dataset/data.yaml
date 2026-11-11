@@ -1,0 +1,16 @@
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: apple
+  1: tangerine
+  2: pear
+  3: watermelon
+  4: durian
+  5: lemon
+  6: grape
+  7: pineapple
+  8: dragon_fruit
+  9: korean_melon
+  10: cantaloupe

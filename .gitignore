@@ -1,0 +1,4 @@
+dataset/images/
+resultados/deteccoes/
+resultados/*/train_batch*.jpg
+resultados/*/val_batch*.jpg
